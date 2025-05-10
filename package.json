@@ -2,7 +2,7 @@
     "name": "can-state-machine",
     "version": "1.0.1",
     "description": "Can's State Machine to to implement state machine programming workflow",
-    "main": "index.js",
+    "main": "lib/index.js",
     "scripts": {
         "build": "webpack --config webpack.config.js",
         "prepublishOnly": "npm run build"
