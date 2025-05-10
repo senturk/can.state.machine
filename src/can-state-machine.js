@@ -1,6 +1,6 @@
 "use strict";
 /**
- * the WebStateMachine is s concecpt of web creation and programming of backend models, by wrapping
+ * the CanStateMachine is a concept of web creation and programming of backend models, by wrapping
  * the complete model into a statemachine, handling the single states and transitions.
  * 
  * Important:
@@ -11,7 +11,7 @@
  * @date 2022-03-31
  */
 
-class WebStateMachine {
+class CanStateMachine {
 
     static ASYNCHRONOUS = "asynchrounous call waiting for next step";
 
@@ -120,7 +120,6 @@ class WebStateMachine {
     asyncProceed(par_status) {
         this.next_status = par_status;
 
-        // we handle only lowercase status
         if (this.next_status) this.next_status = this.next_status.toLowerCase();
 
         var asynchronous_call_waited = false;
@@ -131,63 +130,36 @@ class WebStateMachine {
             && !asynchronous_call_waited) {
             this.metrics.loop_counter++;
 
-            // first the transition. 
-            // ?Why transition first?
-            // the transition is the "arrow" between the status. So if there is something to switch
-            // or adapt, then the transition could cover that up.
-            // but the transistion requires to know the from and the to. That "to" will be defined
-            // by the status itelf.
-            // We run that loop here first with the start, but after that, we run the rest. and 
-            // that is the reason, why the transition need to be fired before the next status will
-            // be settled
             var transition = this._find_transition(this.current_status, this.next_status);
 
             if (transition) {
                 this.metrics.log.push("'" + this.current_status + "' -> '" + this.next_status + "'");
                 console.log("transition: %s -> %s, loop_count: %i", this.current_status, this.next_status, this.metrics.loop_counter);
 
-                // if there is a transition stored for that combination, then run that.
                 transition.transition_function();
 
-                // after being fired, delete this transition
                 transition = undefined;
             }
 
-            // here we switch from next status to current status
             this.previous_status = this.current_status;
             this.current_status = this.next_status;
 
             this.metrics.log.push(this.current_status);
 
-            // console.log("status: %s, loop_count: %i", this.current_status, this.metrics.loop_counter);
-
-            /**
-             * call the function of previous status
-             */
             this.next_status = this.states[this.current_status](this.previous_status);
 
-            if (this.next_status === WebStateMachine.ASYNCHRONOUS) {
-                // this is an asynchronous call, therefore we will stop the processing of the loop here and wait for the 
-                // external injection 
+            if (this.next_status === CanStateMachine.ASYNCHRONOUS) { // Updated reference
                 asynchronous_call_waited = true;
             } else {
-                // we handle only lowercase status
                 if (this.next_status) this.next_status = this.next_status.toLowerCase();
 
-                // exception for "end" status. ... we don't need anything else
                 if (this.next_status === undefined && this.current_status === "end") {
-                    // don't need to check anything ...
                 } else if (!this.states[this.next_status]) {
-                    // check if ths new status is existing
-                    // this status is not existing, throw an error
                     throw new Error("Status not existing: '" + this.next_status + "' returned from status: '" + this.current_status + "'");
                 }
 
-                // if the status, we have fired right now was "end", then we finish the statemachine 
-                // right here
                 if (this.current_status === "end") {
                     this.finished = true;
-                    // metrics
                     this.metrics.execution.end = new Date();
                     this.metrics.execution.duration = this.metrics.execution.end - this.metrics.execution.start;
                 }
@@ -211,4 +183,9 @@ class WebStateMachine {
 
 }
 
-module.exports = WebStateMachine;
+// Universal Module Definition (UMD)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = CanStateMachine; // Node.js export
+} else if (typeof window !== 'undefined') {
+    window.csm = CanStateMachine; // Browser global variable
+}
