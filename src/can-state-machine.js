@@ -15,10 +15,11 @@ class CanStateMachine {
 
     static ASYNCHRONOUS = "asynchrounous call waiting for next step";
 
-    constructor() {
+    constructor(options = {}) {
         this.data = {};     // is a data object, for users requirements
         this.states = {};
         this.transitions = [];
+
         this.metrics = {
             loop_counter: 0,
             states: 0,
@@ -29,8 +30,10 @@ class CanStateMachine {
                 end: 0,
                 duration: 0
             }
-        },
-            this.loop_max = 99;
+        };
+
+        this.config_loop_max = options.loopMax || -1;
+        this.loop_max = this.config_loop_max > 0 ? this.config_loop_max : 1;
     }
 
     // the duration till now.
@@ -129,6 +132,8 @@ class CanStateMachine {
             && this.metrics.loop_counter < this.loop_max
             && !asynchronous_call_waited) {
             this.metrics.loop_counter++;
+            // if loopmax is infinitife, then loop_max is one ahead :)
+            if( this.config_loop_max <= 0 ) { this.loop_max = this.metrics.loop_counter + 1 };
 
             var transition = this._find_transition(this.current_status, this.next_status);
 
@@ -165,6 +170,11 @@ class CanStateMachine {
                 }
             }
         }
+
+        if( this.metrics.loop_counter >= this.loop_max ) {
+            throw new Error("CanStateMachine Loop Max Counter reached: '" + this.loop_max + "' change configuration, or find issue.");
+        }
+
     }
 
     _find_transition(from, to) {
