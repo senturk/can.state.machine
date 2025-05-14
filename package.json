@@ -1,6 +1,6 @@
 {
     "name": "can-state-machine",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Can's State Machine to to implement state machine programming workflow",
     "main": "lib/index.js",
     "scripts": {
