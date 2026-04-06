@@ -88,20 +88,12 @@ class CanStateMachine {
      * Today, that test is really just, if the start and end status are exising
      */
     check() {
-        var rv = false;
-
-        if (!this.states.start) {
+        // Both "start" and "end" status functions must be registered.
+        // Without them the machine has no entry point or termination condition.
+        if (!this.states.start || !this.states.end) {
             return false;
-        } else if (!this.states.end) {
-            return false;
-        } else if (this.states.start && this.states.end) {
-            // everything is fine!
-            rv = true;
-        } else {
-            // start or end is missing, that is wrong
-            rv = false;
         }
-        return rv;
+        return true;
     }
 
     start() {
@@ -171,7 +163,7 @@ class CanStateMachine {
             }
         }
 
-        if( this.metrics.loop_counter >= this.loop_max ) {
+        if( !this.finished && this.metrics.loop_counter >= this.loop_max ) {
             throw new Error("CanStateMachine Loop Max Counter reached: '" + this.loop_max + "' change configuration, or find issue.");
         }
 
