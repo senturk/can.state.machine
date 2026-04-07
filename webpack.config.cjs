@@ -1,12 +1,15 @@
 'use strict';
 const path = require('path');
 
+const SRC = './src/can-state-machine.js';
+
 /** @type {import('webpack').Configuration[]} */
 module.exports = [
 
-  // --- CommonJS build ---
+  // ── 1. CJS für Node ──────────────────────────────────────────────
   {
-    entry: './src/can-state-machine.js',
+    name: 'cjs',
+    entry: SRC,
     mode: 'production',
     target: 'node',
     output: {
@@ -14,31 +17,71 @@ module.exports = [
       filename: 'index.cjs',
       library: {
         type: 'commonjs2',
-        export: 'default',   // <-- neu: unwrap den ESM-default-Export
+        export: 'default',   // unwrap default → require('can-state-machine') gibt die Klasse direkt
       },
     },
-    optimization: { minimize: false },
+    optimization: { minimize: false, mangleExports: false },
   },
 
-  // --- ESM build ---
+  // ── 2. ESM für Node + moderne Bundler ────────────────────────────
   {
     name: 'esm',
-    entry: './src/can-state-machine.js',
+    entry: SRC,
     mode: 'production',
-    target: 'es2020',                    // <-- 'es2020' statt 'web'
-    experiments: {
-      outputModule: true,
-    },
+    target: 'es2020',
+    experiments: { outputModule: true },
     output: {
       path: path.resolve(__dirname, 'lib'),
       filename: 'index.mjs',
-      module: true,                      // <-- neu
-      chunkFormat: 'module',             // <-- neu
-      library: {
-        type: 'module',
-      },
-      environment: { module: true },     // <-- neu: sagt Webpack, dass der Consumer Module kann
+      module: true,
+      chunkFormat: 'module',
+      library: { type: 'module' },
+      environment: { module: true },
     },
-    optimization: { minimize: false, mangleExports: false, concatenateModules: true },  // <-- concatenateModules flacht die Runtime aus
+    optimization: {
+      minimize: false,
+      mangleExports: false,
+      concatenateModules: true,
+    },
+  },
+
+  // ── 3. UMD für klassischen <script>-Tag ──────────────────────────
+  {
+    name: 'browser-umd',
+    entry: SRC,
+    mode: 'production',
+    target: ['web', 'es5'],
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+      filename: 'can-state-machine.min.js',
+      library: {
+        name: 'CanStateMachine',
+        type: 'umd',
+        export: 'default',   // window.CanStateMachine ist die Klasse, nicht {default: Klasse}
+      },
+      globalObject: 'this',
+    },
+  },
+
+  // ── 4. Browser-ESM standalone (für unpkg via <script type="module">) ──
+  {
+    name: 'browser-esm',
+    entry: SRC,
+    mode: 'production',
+    target: 'web',
+    experiments: { outputModule: true },
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+      filename: 'can-state-machine.esm.js',
+      module: true,
+      chunkFormat: 'module',
+      library: { type: 'module' },
+      environment: { module: true },
+    },
+    optimization: {
+      minimize: true,
+      mangleExports: false,
+      concatenateModules: true,
+    },
   },
 ];

@@ -1,28 +1,32 @@
 {
   "name": "can-state-machine",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "type": "module",
   "description": "Can's State Machine to implement state machine programming workflow",
-  "main": "lib/index.cjs",
-  "module": "lib/index.mjs",
+  "main":    "./lib/index.cjs",
+  "module":  "./lib/index.mjs",
+  "browser": "./dist/can-state-machine.esm.js",
   "exports": {
     ".": {
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.cjs",
+      "browser": {
+        "import":  "./dist/can-state-machine.esm.js",
+        "default": "./dist/can-state-machine.min.js"
+      },
+      "node": {
+        "import":  "./lib/index.mjs",
+        "require": "./lib/index.cjs"
+      },
       "default": "./lib/index.cjs"
     }
   },
   "files": [
     "lib/",
+    "dist/",
     "src/"
   ],
   "scripts": {
     "build": "webpack --config webpack.config.cjs",
     "prepublishOnly": "npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/senturk/can.state.machine.git"
   },
   "keywords": [
     "finite-state-machine",
@@ -32,6 +36,10 @@
   ],
   "author": "cn.sntrk",
   "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/senturk/can.state.machine.git"
+  },
   "bugs": {
     "url": "https://github.com/senturk/can.state.machine/issues"
   },

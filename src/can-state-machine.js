@@ -10,8 +10,9 @@
  * @version 0.1
  * @date 2022-03-31
  */
+"use strict";
 
-class CanStateMachine {
+export class CanStateMachine {
 
     static ASYNCHRONOUS = "asynchrounous call waiting for next step";
 
