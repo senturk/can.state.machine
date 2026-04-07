@@ -22,6 +22,7 @@ module.exports = [
 
   // --- ESM build ---
   {
+    name: 'esm',
     entry: './src/can-state-machine.js',
     mode: 'production',
     target: 'es2020',                    // <-- 'es2020' statt 'web'
@@ -38,6 +39,6 @@ module.exports = [
       },
       environment: { module: true },     // <-- neu: sagt Webpack, dass der Consumer Module kann
     },
-    optimization: { minimize: false, concatenateModules: true },  // <-- concatenateModules flacht die Runtime aus
+    optimization: { minimize: false, mangleExports: false, concatenateModules: true },  // <-- concatenateModules flacht die Runtime aus
   },
 ];

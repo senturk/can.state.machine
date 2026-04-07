@@ -1,6 +1,6 @@
 {
   "name": "can-state-machine",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "type": "module",
   "description": "Can's State Machine to implement state machine programming workflow",
   "main": "lib/index.cjs",
