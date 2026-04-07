@@ -185,9 +185,4 @@ class CanStateMachine {
 
 }
 
-// Universal Module Definition (UMD)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CanStateMachine; // Node.js export
-} else if (typeof window !== 'undefined') {
-    window.csm = CanStateMachine; // Browser global variable
-}
+export default CanStateMachine;

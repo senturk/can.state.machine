@@ -1,42 +1,43 @@
-// webpack.config.js
 'use strict';
-
 const path = require('path');
 
 /** @type {import('webpack').Configuration[]} */
 module.exports = [
 
-  // --- CommonJS build (Node.js require / legacy bundlers) ---
+  // --- CommonJS build ---
   {
     entry: './src/can-state-machine.js',
     mode: 'production',
     target: 'node',
     output: {
       path: path.resolve(__dirname, 'lib'),
-      filename: 'index.cjs',           // explicit .cjs extension = unambiguous
+      filename: 'index.cjs',
       library: {
         type: 'commonjs2',
-      },
-    },
-    optimization: { minimize: false }, // keep readable for a library
-  },
-
-  // --- ESM build (bundlers, native Node ESM, Vite, etc.) ---
-  {
-    entry: './src/can-state-machine.js',
-    mode: 'production',
-    target: 'web',                     // also works in Node 12+ ESM consumers
-    experiments: {
-      outputModule: true,              // webpack 5 ESM output
-    },
-    output: {
-      path: path.resolve(__dirname, 'lib'),
-      filename: 'index.mjs',
-      library: {
-        type: 'module',
+        export: 'default',   // <-- neu: unwrap den ESM-default-Export
       },
     },
     optimization: { minimize: false },
   },
 
+  // --- ESM build ---
+  {
+    entry: './src/can-state-machine.js',
+    mode: 'production',
+    target: 'es2020',                    // <-- 'es2020' statt 'web'
+    experiments: {
+      outputModule: true,
+    },
+    output: {
+      path: path.resolve(__dirname, 'lib'),
+      filename: 'index.mjs',
+      module: true,                      // <-- neu
+      chunkFormat: 'module',             // <-- neu
+      library: {
+        type: 'module',
+      },
+      environment: { module: true },     // <-- neu: sagt Webpack, dass der Consumer Module kann
+    },
+    optimization: { minimize: false, concatenateModules: true },  // <-- concatenateModules flacht die Runtime aus
+  },
 ];

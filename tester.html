@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>ESM test</title></head>
+<body>
+<script type="module">
+  import CanStateMachine from './lib/index.mjs';
+  console.log('Imported:', CanStateMachine);
+  console.log('ASYNCHRONOUS constant:', CanStateMachine.ASYNCHRONOUS);
+  const fsm = new CanStateMachine();
+  console.log('Instance:', fsm);
+  console.log('If you see this, the import worked.');
+</script>
+</body>
+</html>
